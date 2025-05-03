@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Excel Checklist Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        form {
+            margin-bottom: 1rem;
+        }
+        input[type="file"] {
+            margin-right: 1rem;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #downloadLink {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #dff0d8;
+            border: 1px solid #3c763d;
+            border-radius: 4px;
+            color: #3c763d;
+        }
+        #message {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+        #error {
+            margin-top: 1rem;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Upload an Excel File to Add a Checklist Column</h2>
+    <form id="uploadForm" enctype="multipart/form-data" aria-label="Upload Excel file form">
+        <input type="file" id="fileInput" name="file" accept=".xlsx" required aria-required="true" aria-describedby="fileHelp" />
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    <div id="message" role="status" aria-live="polite"></div>
+    <div id="error" role="alert" aria-live="assertive"></div>
+
+    <div id="downloadLink" style="display:none;">
+        <p>Download your processed file: <a id="fileLink" download>Click Here</a></p>
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById("uploadForm");
+        const fileInput = document.getElementById("fileInput");
+        const downloadLinkDiv = document.getElementById("downloadLink");
+        const fileLink = document.getElementById("fileLink");
+        const messageDiv = document.getElementById("message");
+        const errorDiv = document.getElementById("error");
+
+        uploadForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            messageDiv.textContent = "";
+            errorDiv.textContent = "";
+            downloadLinkDiv.style.display = "none";
+
+            if (!fileInput.files[0]) {
+                errorDiv.textContent = "Please select a file.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            messageDiv.textContent = "Processing file, please wait...";
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                fileLink.href = url;
+                fileLink.download = fileInput.files[0].name.replace(".xlsx", "_updated.xlsx");
+                downloadLinkDiv.style.display = "block";
+                messageDiv.textContent = "File processed successfully!";
+            })
+            .catch(error => {
+                errorDiv.textContent = "Error: " + error.message;
+                messageDiv.textContent = "";
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
