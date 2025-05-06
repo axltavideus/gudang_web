@@ -14,7 +14,13 @@ PROCESSED_FOLDER = os.getenv("PROCESSED_FOLDER", "processed")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    try:
+        inspector = get_inspector()
+        tables = inspector.get_table_names()
+        return render_template("index.html", tables=tables)
+    except Exception as e:
+        logger.error(f"Error retrieving tables for index: {e}", exc_info=True)
+        return render_template("index.html", tables=[])
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
@@ -82,8 +88,7 @@ def list_tables():
 @app.route("/tables")
 def tables():
     try:
-        inspector = get_inspector()
-        tables = inspector.get_table_names()
-        return render_template("tables.html", tables=tables)
+        # Render blank master data page for now
+        return render_template("tables.html")
     except Exception as e:
         logger.error(f"Error retrieving tables: {e}", exc_info=True)
