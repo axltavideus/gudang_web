@@ -2,15 +2,12 @@ import os
 import logging
 from flask import request, send_file, render_template, jsonify, abort
 import pandas as pd
-from app import app
+from app import app, UPLOAD_FOLDER, PROCESSED_FOLDER
 from app.db import engine, get_inspector
 from app.utils import process_excel_file
 from sqlalchemy.exc import OperationalError
 
 logger = logging.getLogger(__name__)
-
-UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
-PROCESSED_FOLDER = os.getenv("PROCESSED_FOLDER", "processed")
 
 @app.route("/")
 def index():
