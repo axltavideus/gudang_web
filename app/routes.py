@@ -67,7 +67,9 @@ def upload_file():
 def view_data(table_name):
     try:
         df = pd.read_sql_table(table_name, con=engine)
-        return df.to_html(index=False)
+        # Convert DataFrame to HTML with Bootstrap classes
+        table_html = df.to_html(classes="table table-striped table-bordered", index=False, border=0)
+        return render_template("tables.html", table_html=table_html, table_name=table_name)
     except Exception as e:
         logger.error(f"Error retrieving data: {e}", exc_info=True)
         return abort(500, description=f"Error retrieving data: {e}")

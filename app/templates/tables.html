@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Master Data{% endblock %}
+{% block title %}Table: {{ table_name }}{% endblock %}
 
 {% block content %}
-    <h2>Master Data</h2>
-    <!-- Blank page for now -->
+    <div class="container mt-4">
+        <h2>Table: {{ table_name }}</h2>
+        <div class="table-responsive">
+            {{ table_html|safe }}
+        </div>
+    </div>
 {% endblock %}
