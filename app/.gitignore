@@ -4,3 +4,5 @@ uploads/*
 
 processed/*
 !processed/.gitkeep
+
+__pycache__/*
