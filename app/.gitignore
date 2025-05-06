@@ -1,0 +1,6 @@
+# Ignore contents of uploads and processed folders, but keep the folders
+uploads/*
+!uploads/.gitkeep
+
+processed/*
+!processed/.gitkeep
